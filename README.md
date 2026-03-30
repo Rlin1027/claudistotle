@@ -4,6 +4,19 @@
 
 # Claudistotle — Philosophy Research Plugin for Claude Code
 
+<p align="center">
+  <a href="https://github.com/Rlin1027/claudistotle/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License" /></a>
+  <img src="https://img.shields.io/badge/version-1.0.0-brightgreen" alt="Version" />
+  <img src="https://img.shields.io/badge/Python-3.9+-3776AB?logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/Claude_Code-Plugin-7C3AED?logo=anthropic&logoColor=white" alt="Claude Code" />
+  <img src="https://img.shields.io/badge/uv-Package_Manager-DE5FE9?logo=uv&logoColor=white" alt="uv" />
+  <img src="https://img.shields.io/badge/BibTeX-Citation_Verified-E4552D" alt="BibTeX" />
+  <img src="https://img.shields.io/badge/Semantic_Scholar-API-1857B6" alt="Semantic Scholar" />
+  <img src="https://img.shields.io/badge/CrossRef-Verified-F36F21" alt="CrossRef" />
+  <img src="https://img.shields.io/badge/OpenAlex-250M+_works-8B5CF6" alt="OpenAlex" />
+  <img src="https://img.shields.io/badge/Platform-macOS%20|%20Linux%20|%20Windows-lightgrey" alt="Platform" />
+</p>
+
 A full-pipeline philosophy research assistant that takes you from a rough topic idea to a polished academic paper. Claudistotle searches 8+ academic databases, produces literature reviews with verified citations (never fabricates references), writes structured academic prose, and simulates three-round peer review — all inside Claude Code.
 
 ## What It Does
