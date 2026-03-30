@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(sudo *)",
+      "Bash(dd *)",
+      "Bash(mkfs *)"
+    ],
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "WebSearch",
+      "WebFetch",
+      "Bash",
+      "Write(reviews/**)",
+      "Edit(reviews/**)"
+    ],
+    "ask": [
+      "Bash(rm *)",
+      "Bash(rmdir *)"
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "claudistotle",
+  "version": "1.0.0",
+  "description": "Philosophy research assistant — automated literature review with verified citations, primary text analysis, academic writing, and peer review simulation. Covers the full research pipeline from topic refinement to final manuscript.",
+  "author": {
+    "name": "RLin"
+  },
+  "homepage": "https://github.com/Rlin1027/claudistotle",
+  "repository": "https://github.com/Rlin1027/claudistotle",
+  "license": "Apache-2.0",
+  "keywords": ["philosophy", "research", "literature-review", "academic-writing", "citation"]
+}

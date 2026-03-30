@@ -1,0 +1,43 @@
+{
+  "SessionStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/setup-environment.sh\"",
+          "timeout": 120
+        }
+      ]
+    }
+  ],
+  "PreToolUse": [
+    {
+      "matcher": "Write",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "\"$PYTHON\" \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/validate_bib_write.py\" 2>/dev/null || echo '{\"hookSpecificOutput\": {}}'"
+        }
+      ]
+    },
+    {
+      "matcher": "Bash",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "\"$PYTHON\" \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/block_background_bash.py\" 2>/dev/null || echo '{}'"
+        }
+      ]
+    }
+  ],
+  "SubagentStop": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/subagent_stop_bib.sh\""
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+---
+config:
+  layout: dagre
+---
+flowchart TB
+    subgraph DESIGN["🔍 Phase 0 · Research Design"]
+        A["/claudistotle:research-design<br>────────────<br>Socratic Mentor"]
+    end
+
+    subgraph LITREV["📚 Phase 1–6 · Literature Review · Claudistotle Core Engine"]
+        direction LR
+        B1["literature-review-planner<br>────────────<br>Strategy Agent<br><i>Methodology-aware</i>"]
+        B2["search-agent<br>────────────<br>Search Agent<br><i>Brave + Semantic Scholar</i>"]
+        B3["synthesis-writer<br>────────────<br>Synthesis Agent<br><i>Methodology-aware writing</i>"]
+        B1 --> B2 --> B3
+    end
+
+    subgraph SOURCES["📥 Source Collection"]
+        SRC["sources/secondary/<br>────────────<br>Auto-download PDF + MD conversion<br><i>Unpaywall API</i>"]
+    end
+
+    subgraph GATE_A["🔒 Quality Gate A"]
+        VA["/claudistotle:validate Mode A<br>────────────<br>Literature coverage check"]
+    end
+
+    subgraph REFINE_BOX["🔄 Research Question Refinement"]
+        RF["/claudistotle:refine<br>────────────<br>Five-dimension gap analysis<br><i>PROCEED · NARROW · PIVOT · EXPAND</i>"]
+    end
+
+    subgraph DRAFT["✍️ Phase 7 · Drafting"]
+        C1["/claudistotle:draft Step 1<br>────────────<br>Argument skeleton + logic pre-review<br><i>User Confirmation Gate</i>"]
+        C2["/claudistotle:draft Step 2<br>────────────<br>Prose expansion<br><i>Integrates commentary-*.md</i>"]
+        C1 -- "argument-skeleton.md<br>after user confirmation" --> C2
+    end
+
+    subgraph GATE_B["🔒 Quality Gate B"]
+        VB["/claudistotle:validate Mode B<br>────────────<br>Citation integrity check"]
+    end
+
+    subgraph REVIEW["🏛️ Phase 8 · Peer Review (3 rounds)"]
+        direction LR
+        R1["Round 1<br>────────────<br>Athena · Argument validity<br><i>Logical structure · Fallacy detection</i>"]
+        R2["Round 2<br>────────────<br>Athena · Evidence quality<br><i>Citation adequacy · Straw man detection</i>"]
+        R3["Round 3<br>────────────<br>Athena · Writing quality<br><i>Style · Terminology · Transitions</i>"]
+        R1 -- "User Gate" --> R2 -- "User Gate" --> R3
+    end
+
+    subgraph GATE_C["🔒 Quality Gate C"]
+        VC["/claudistotle:validate Mode C<br>────────────<br>Change record completeness"]
+    end
+
+    DONE["✅ Ready for submission"]
+
+    subgraph FEEDBACK_BOX["💬 External Feedback Integration"]
+        FB["/claudistotle:feedback<br>────────────<br>Record · Classify · Route<br><i>Advisor · Committee</i>"]
+    end
+
+    TC["🔤 /claudistotle:text-commentary<br>────────────<br>Phase 1: Annotate logical connectors<br>Phase 2: Write intro · development · conclusion<br><i>Independent tool · Links to sources/primary/</i>"]
+
+    PROGRESS["📊 PROGRESS.md<br>────────────<br>Progress tracking · Auto-updated<br><i>Updated on each skill completion</i>"]
+
+    subgraph AUTOPILOT_BOX["🤖 Automated Orchestration"]
+        AP["/claudistotle:autopilot<br>────────────<br>Pipeline Orchestrator<br><i>auto-advance · self-heal · parallel</i>"]
+    end
+
+    %% Main pipeline
+    A -- "research-proposal.md" --> B1
+    B3 -- "literature-all.bib<br>literature-review-final.md" --> SRC
+    SRC -- "PDF + MD full text" --> VA
+    VA -- "pass" --> RF
+    RF -- "confirm / update research-proposal.md" --> C1
+    C2 -- "paper-draft.md" --> VB
+    VB -- "pass" --> R1
+    R3 -- "change-record.md" --> VC
+    VC -- "pass" --> DONE
+
+    %% Feedback loops
+    VA -- "insufficient coverage" --> B1
+    RF -- "EXPAND: supplement literature" --> B1
+    RF -- "PIVOT: redesign" --> A
+    R1 -- "Structural issues" --> A
+    R2 -- "Literature gaps" --> B1
+    R3 -- "Logic issues surfaced" --> R1
+
+    %% Advisor feedback loops
+    DONE -. "after advisor discussion" .-> FB
+    FB -. "direction" .-> RF
+    FB -. "literature" .-> B1
+    FB -. "argument" .-> C1
+    FB -. "evidence" .-> C2
+    FB -. "writing" .-> R1
+
+    %% Commentary integration
+    TC -. "commentary-*.md" .-> C1
+    TC -. "commentary-*.md" .-> C2
+    TC -. "sources/primary/" .-> TC
+
+    %% Autopilot orchestration (dispatches stages via Task agents)
+    AP -. "dispatch" .-> B1
+    AP -. "dispatch" .-> VA
+    AP -. "dispatch" .-> RF
+    AP -. "dispatch" .-> C1
+    AP -. "dispatch" .-> VB
+    AP -. "dispatch" .-> R1
+    AP -. "dispatch" .-> VC
+    AP -. "reads" .-> PROGRESS
+    AP -. "parallel" .-> TC
+
+    %% Progress tracking (connected to all stages)
+    A -. "update" .-> PROGRESS
+    B3 -. "update" .-> PROGRESS
+    VA -. "update" .-> PROGRESS
+    RF -. "update" .-> PROGRESS
+    C1 -. "update" .-> PROGRESS
+    C2 -. "update" .-> PROGRESS
+    VB -. "update" .-> PROGRESS
+    R3 -. "update" .-> PROGRESS
+    VC -. "update" .-> PROGRESS
+
+    %% Styles
+    style DESIGN fill:#e8f4f8,stroke:#5b9bd5,stroke-width:2px
+    style LITREV fill:#e8f8e8,stroke:#70ad47,stroke-width:2px
+    style SOURCES fill:#e8f8e8,stroke:#70ad47,stroke-width:1px,stroke-dasharray:3 3
+    style GATE_A fill:#fff3e0,stroke:#ff9800,stroke-width:2px,stroke-dasharray:5 3
+    style REFINE_BOX fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+    style DRAFT fill:#fef9e7,stroke:#f4b942,stroke-width:2px
+    style GATE_B fill:#fff3e0,stroke:#ff9800,stroke-width:2px,stroke-dasharray:5 3
+    style REVIEW fill:#f4e8f8,stroke:#9b59b6,stroke-width:2px
+    style GATE_C fill:#fff3e0,stroke:#ff9800,stroke-width:2px,stroke-dasharray:5 3
+    style DONE fill:#d5f5e3,stroke:#27ae60,stroke-width:3px
+    style FEEDBACK_BOX fill:#e0f7fa,stroke:#00acc1,stroke-width:2px,stroke-dasharray:6 4
+    style TC fill:#fde8e8,stroke:#e74c3c,stroke-width:2px,stroke-dasharray:6 4
+    style AUTOPILOT_BOX fill:#e8eaf6,stroke:#3f51b5,stroke-width:2px,stroke-dasharray:6 4
+    style AP fill:#e8eaf6,stroke:#3f51b5
+    style PROGRESS fill:#f3e5f5,stroke:#ab47bc,stroke-width:1px,stroke-dasharray:3 3
+    style VA fill:#fff8e1,stroke:#ff9800
+    style VB fill:#fff8e1,stroke:#ff9800
+    style VC fill:#fff8e1,stroke:#ff9800
+    style RF fill:#e3f2fd,stroke:#2196f3
+    style C1 fill:#fff9db,stroke:#f4b942
+    style C2 fill:#fff9db,stroke:#f4b942
+    style R1 fill:#f0e6ff,stroke:#9b59b6
+    style R2 fill:#f0e6ff,stroke:#9b59b6
+    style R3 fill:#f0e6ff,stroke:#9b59b6
+    style SRC fill:#e8f8e8,stroke:#70ad47
+    style FB fill:#e0f7fa,stroke:#00acc1
+    style PROGRESS fill:#f3e5f5,stroke:#ab47bc

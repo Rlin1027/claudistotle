@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claudistotle — Philosophy Research Plugin for Claude Code</title>
+  <style>
+    :root {
+      --primary: #4a5568;
+      --accent: #5b6abf;
+      --accent-light: #7c8ae6;
+      --bg: #fafafa;
+      --card-bg: #ffffff;
+      --text: #2d3748;
+      --text-muted: #718096;
+      --border: #e2e8f0;
+      --code-bg: #1a202c;
+      --code-text: #e2e8f0;
+      --success: #48bb78;
+      --warning: #ecc94b;
+      --gate: #ed8936;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- Navigation --- */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      padding: 0 2rem;
+    }
+    nav .inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    nav .logo {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--accent);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    nav .logo img { height: 32px; border-radius: 6px; }
+    nav ul { list-style: none; display: flex; gap: 1.5rem; }
+    nav a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    nav a:hover { color: var(--accent); }
+
+    /* --- Hero --- */
+    .hero {
+      padding: 140px 2rem 80px;
+      text-align: center;
+      background: linear-gradient(135deg, #f7f8fc 0%, #eef1f8 100%);
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 640px;
+      margin: 0 auto 2rem;
+    }
+    .hero .badges {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text-muted);
+    }
+    .cta-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.8rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .cta-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .cta-primary:hover { background: var(--accent-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(91,106,191,0.3); }
+    .cta-secondary {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .cta-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* --- Sections --- */
+    section { padding: 80px 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin-bottom: 3rem;
+    }
+
+    /* --- Feature Grid --- */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .feature-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); transform: translateY(-2px); }
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+    .feature-card h3 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+    .feature-card p { font-size: 0.9rem; color: var(--text-muted); }
+
+    /* --- Pipeline --- */
+    .pipeline-section { background: var(--code-bg); color: var(--code-text); }
+    .pipeline-section h2 { color: #fff; }
+    .pipeline-section .section-label { color: var(--accent-light); }
+    .pipeline-section .section-subtitle { color: #a0aec0; }
+    .pipeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+    .pipeline::before {
+      content: '';
+      position: absolute;
+      left: 27px;
+      top: 32px;
+      bottom: 32px;
+      width: 2px;
+      background: #4a5568;
+    }
+    .stage {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.25rem;
+      padding: 1rem 0;
+      position: relative;
+    }
+    .stage-num {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+    .stage-skill { background: #2d3a5c; color: var(--accent-light); border: 2px solid #4a5a8a; }
+    .stage-gate { background: #5c3a1f; color: var(--gate); border: 2px solid #8a6a3a; }
+    .stage-content h3 { font-size: 1rem; margin-bottom: 0.25rem; }
+    .stage-content h3 code {
+      background: #2d3748;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: var(--accent-light);
+    }
+    .stage-content p { font-size: 0.88rem; color: #a0aec0; }
+    .gate-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(237,137,54,0.15);
+      color: var(--gate);
+      margin-left: 0.5rem;
+    }
+
+    /* --- Setup Steps --- */
+    .setup-steps { counter-reset: setup; }
+    .setup-step {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem 1.75rem 1.75rem 4.5rem;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    .setup-step::before {
+      counter-increment: setup;
+      content: counter(setup);
+      position: absolute;
+      left: 1.5rem;
+      top: 1.75rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .setup-step h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .setup-step p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+
+    /* --- Code blocks --- */
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      line-height: 1.6;
+    }
+    code {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    }
+    p code, li code {
+      background: #edf2f7;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: var(--accent);
+    }
+
+    /* --- Commands Table --- */
+    .commands-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .commands-table th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 2px solid var(--border);
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .commands-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .commands-table td:first-child code {
+      white-space: nowrap;
+    }
+    .commands-table tr:hover { background: #f7fafc; }
+
+    /* --- Output tree --- */
+    .tree {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 1.5rem 2rem;
+      border-radius: 12px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      overflow-x: auto;
+    }
+    .tree .dir { color: #90cdf4; }
+    .tree .file { color: #a0aec0; }
+    .tree .comment { color: #718096; font-style: italic; }
+
+    /* --- Tips --- */
+    .tip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+    .tip {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      border-left: 3px solid var(--accent);
+    }
+    .tip h4 { font-size: 0.95rem; margin-bottom: 0.4rem; }
+    .tip p { font-size: 0.88rem; color: var(--text-muted); }
+
+    /* --- Footer --- */
+    footer {
+      padding: 3rem 2rem;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* --- Responsive --- */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2rem; }
+      section { padding: 60px 1.25rem; }
+      nav ul { gap: 1rem; }
+      .pipeline::before { left: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <div class="inner">
+    <a href="#" class="logo">
+      <img src="assets/Claudistotle.png" alt="Logo" onerror="this.style.display='none'" />
+      Claudistotle
+    </a>
+    <ul>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pipeline">Pipeline</a></li>
+      <li><a href="#setup">Setup</a></li>
+      <li><a href="#commands">Commands</a></li>
+      <li><a href="#output">Output</a></li>
+      <li><a href="#tips">Tips</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="badges">
+    <span class="badge">8+ Academic Databases</span>
+    <span class="badge">Verified Citations Only</span>
+    <span class="badge">Zero Hallucination</span>
+    <span class="badge">Apache 2.0</span>
+  </div>
+  <h1>Philosophy Research,<br /><span>Automated</span></h1>
+  <p>A Claude Code plugin that takes you from a rough topic idea to a polished, peer-reviewed academic paper — with every citation verified against real databases.</p>
+  <div class="cta-group">
+    <a href="#setup" class="cta cta-primary">Get Started</a>
+    <a href="https://github.com/Rlin1027/claudistotle" class="cta cta-secondary">View on GitHub</a>
+  </div>
+</header>
+
+<!-- Features -->
+<section id="features">
+  <div class="container">
+    <div class="section-label">Capabilities</div>
+    <h2>What Claudistotle Does</h2>
+    <p class="section-subtitle">A full research pipeline from question design to final paper, powered by specialized AI agents.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#eef2ff">&#x1F50D;</div>
+        <h3>Literature Review</h3>
+        <p>Searches Semantic Scholar, OpenAlex, CORE, arXiv, PhilPapers, SEP, IEP, and NDPR. Every citation verified via CrossRef. Open-access PDFs auto-downloaded.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#fef3e2">&#x270D;&#xFE0F;</div>
+        <h3>Academic Writing</h3>
+        <p>Builds a structured argument skeleton (claim / evidence / counterargument / rebuttal), then expands into full prose with Chicago author-date citations.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#e6f7ee">&#x1F9D1;&#x200D;&#x1F3EB;</div>
+        <h3>Peer Review Simulation</h3>
+        <p>Three rounds with two AI personas — Athena (reviewer) and Calliope (reviser). Covers argument validity, evidence quality, and writing polish.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#fde8e8">&#x1F4D6;</div>
+        <h3>Text Commentary</h3>
+        <p>Close reading and logical annotation of primary philosophical texts. Identifies logical connectors, argument structure, and integration points.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#e8f0fe">&#x1F916;</div>
+        <h3>Autopilot Mode</h3>
+        <p>Run the entire pipeline with configurable autonomy (cautious / moderate / full). Self-heals when quality gates fail — retries automatically before asking for help.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#f3e8ff">&#x2705;</div>
+        <h3>Quality Gates</h3>
+        <p>Three validation checkpoints between phases ensure coverage, citation integrity, and revision completeness. No shortcuts to the finish line.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pipeline -->
+<section id="pipeline" class="pipeline-section">
+  <div class="container">
+    <div class="section-label">Workflow</div>
+    <h2>Research Pipeline</h2>
+    <p class="section-subtitle">Each stage builds on the last. Quality gates prevent issues from propagating downstream.</p>
+
+    <div class="pipeline">
+      <div class="stage">
+        <div class="stage-num stage-skill">1</div>
+        <div class="stage-content">
+          <h3><code>/claudistotle:research-design</code></h3>
+          <p>Define your research question, scope, and methodology. Output: <code>research-proposal.md</code></p>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num stage-skill">2</div>
+        <div class="stage-content">
+          <h3><code>/claudistotle:literature-review</code></h3>
+          <p>6-phase automated review: environment check &rarr; domain decomposition &rarr; parallel multi-database research &rarr; synthesis planning &rarr; section writing &rarr; assembly &amp; export.</p>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num stage-gate">&#x2714;</div>
+        <div class="stage-content">
+          <h3><code>/claudistotle:validate</code> <span class="gate-tag">Mode A</span></h3>
+          <p>Quality gate: Is literature coverage sufficient? Fails &rarr; loop back to Phase 3 for supplementary search.</p>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num stage-skill">3</div>
+        <div class="stage-content">
+          <h3><code>/claudistotle:refine</code></h3>
+          <p>Re-evaluate the research question: proceed as-is, narrow scope, pivot direction, or expand coverage.</p>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num stage-skill">4</div>
+        <div class="stage-content">
+          <h3><code>/claudistotle:draft</code></h3>
+          <p>Step 1: argument skeleton (claim/evidence/counter/rebuttal). Step 2: full academic prose with Chicago citations.</p>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num stage-gate">&#x2714;</div>
+        <div class="stage-content">
+          <h3><code>/claudistotle:validate</code> <span class="gate-tag">Mode B</span></h3>
+          <p>Quality gate: Citation integrity check. Every reference verified against CrossRef and Semantic Scholar.</p>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num stage-skill">5</div>
+        <div class="stage-content">
+          <h3><code>/claudistotle:peer-review</code></h3>
+          <p>Three rounds: argument validity &rarr; evidence quality &rarr; writing polish. Two AI personas iterate on your draft.</p>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num stage-gate">&#x2714;</div>
+        <div class="stage-content">
+          <h3><code>/claudistotle:validate</code> <span class="gate-tag">Mode C</span></h3>
+          <p>Quality gate: Change record completeness. Ensures all reviewer feedback has been addressed.</p>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num" style="background:#2d5c3a;color:#48bb78;border:2px solid #3a8a5a">&#x2713;</div>
+        <div class="stage-content">
+          <h3 style="color:#48bb78">Done</h3>
+          <p>Your reviewed, citation-verified paper is ready.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Setup -->
+<section id="setup">
+  <div class="container">
+    <div class="section-label">Getting Started</div>
+    <h2>Setup in 4 Steps</h2>
+    <p class="section-subtitle">Works on macOS, Linux, and Windows (Git Bash). Takes about 5 minutes.</p>
+
+    <div class="setup-steps">
+      <div class="setup-step">
+        <h3>Install Prerequisites</h3>
+        <p>You need Claude Code (CLI or Desktop), Python 3.9+, and uv.</p>
+        <pre><code># Install uv (fast Python package manager)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install jq (needed for BibTeX hooks)
+brew install jq        # macOS
+# apt install jq       # Linux</code></pre>
+      </div>
+
+      <div class="setup-step">
+        <h3>Install the Plugin</h3>
+        <p>Add from the marketplace, or install locally for development.</p>
+        <pre><code># From marketplace
+/plugin marketplace add Rlin1027/claudistotle
+/plugin install claudistotle@claudistotle
+
+# Or local install
+claude plugin install --plugin-dir ./claudistotle-plugin --scope project</code></pre>
+      </div>
+
+      <div class="setup-step">
+        <h3>Configure API Keys</h3>
+        <p>Claudistotle needs API access to search academic databases. The setup wizard handles this automatically.</p>
+        <pre><code># Run the setup wizard inside Claude Code
+/claudistotle:setup
+
+# It creates ${CLAUDE_PLUGIN_DATA}/.env with:
+BRAVE_API_KEY=your-key          # brave.com/search/api (free tier)
+CROSSREF_MAILTO=your@email.com  # No signup needed
+S2_API_KEY=your-key             # semanticscholar.org (free, recommended)
+OPENALEX_EMAIL=your@email.com   # No signup needed</code></pre>
+      </div>
+
+      <div class="setup-step">
+        <h3>Run Your First Review</h3>
+        <p>Just tell Claude what you want to research. The plugin handles the rest.</p>
+        <pre><code># In Claude Code, simply type:
+I need a literature review on the extended mind thesis
+and its implications for cognitive offloading.
+
+# Claude invokes /claudistotle:literature-review
+# Output lands in reviews/[your-topic]/</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Commands -->
+<section id="commands" style="background:#f7f8fc">
+  <div class="container">
+    <div class="section-label">Reference</div>
+    <h2>All Commands</h2>
+    <p class="section-subtitle">Each command works independently. Use the full pipeline or just the parts you need.</p>
+
+    <table class="commands-table">
+      <thead>
+        <tr>
+          <th>Command</th>
+          <th>Description</th>
+          <th>Phase</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>/claudistotle:setup</code></td><td>First-time configuration wizard</td><td>Pre</td></tr>
+        <tr><td><code>/claudistotle:help</code></td><td>Interactive usage guide and tutorial</td><td>Pre</td></tr>
+        <tr><td><code>/claudistotle:research-design</code></td><td>Define research question, scope, and methodology</td><td>1</td></tr>
+        <tr><td><code>/claudistotle:literature-review</code></td><td>Automated 6-phase literature review (search, verify, synthesize)</td><td>2</td></tr>
+        <tr><td><code>/claudistotle:text-commentary</code></td><td>Primary text close reading and logical annotation</td><td>Any</td></tr>
+        <tr><td><code>/claudistotle:validate</code></td><td>Quality gates between pipeline phases (Modes A, B, C)</td><td>Gates</td></tr>
+        <tr><td><code>/claudistotle:refine</code></td><td>Research question refinement based on findings</td><td>3</td></tr>
+        <tr><td><code>/claudistotle:draft</code></td><td>Two-step academic writing (skeleton + prose)</td><td>4</td></tr>
+        <tr><td><code>/claudistotle:peer-review</code></td><td>Three-round peer review simulation</td><td>5</td></tr>
+        <tr><td><code>/claudistotle:feedback</code></td><td>External advisor feedback integration and routing</td><td>Any</td></tr>
+        <tr><td><code>/claudistotle:autopilot</code></td><td>Run the entire pipeline end-to-end</td><td>All</td></tr>
+        <tr><td><code>/claudistotle:philosophy-research</code></td><td>Direct academic database search</td><td>Any</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Output -->
+<section id="output">
+  <div class="container">
+    <div class="section-label">Deliverables</div>
+    <h2>Output Structure</h2>
+    <p class="section-subtitle">Everything is saved to <code>reviews/[project-name]/</code> in your repository.</p>
+
+    <div class="tree">
+<span class="dir">reviews/my-research/</span>
+├── <span class="file">research-proposal.md</span>        <span class="comment"># Research question &amp; methodology</span>
+├── <span class="file">literature-review-final.md</span>  <span class="comment"># Complete literature review</span>
+├── <span class="file">literature-review-final.docx</span><span class="comment"># DOCX version (if pandoc installed)</span>
+├── <span class="file">literature-all.bib</span>          <span class="comment"># Aggregated verified bibliography</span>
+├── <span class="file">argument-skeleton.md</span>        <span class="comment"># Structured argument outline</span>
+├── <span class="file">paper-draft.md</span>              <span class="comment"># Full academic paper draft</span>
+├── <span class="file">change-record.md</span>            <span class="comment"># Revision history from peer review</span>
+├── <span class="file">commentary-*.md</span>             <span class="comment"># Primary text commentaries</span>
+├── <span class="file">PROGRESS.md</span>                 <span class="comment"># Auto-updated progress tracker</span>
+├── <span class="file">INDEX.md</span>                    <span class="comment"># Auto-generated project index</span>
+├── <span class="dir">reports/</span>                    <span class="comment"># Quality reports (validation, review)</span>
+├── <span class="dir">archive/</span>                    <span class="comment"># Version history at decision points</span>
+├── <span class="dir">sources/primary/</span>            <span class="comment"># Primary source texts (user-provided)</span>
+├── <span class="dir">sources/secondary/</span>          <span class="comment"># Auto-downloaded open-access PDFs</span>
+└── <span class="dir">intermediate_files/</span>         <span class="comment"># Workflow artifacts (plans, sections)</span>
+    </div>
+  </div>
+</section>
+
+<!-- Tips -->
+<section id="tips" style="background:#f7f8fc">
+  <div class="container">
+    <div class="section-label">Pro Tips</div>
+    <h2>Get the Most Out of Claudistotle</h2>
+
+    <div class="tip-grid">
+      <div class="tip">
+        <h4>Say "literature review"</h4>
+        <p>Mention you want a "literature review" explicitly. Otherwise Claude may try to help without invoking the full orchestrated pipeline.</p>
+      </div>
+      <div class="tip">
+        <h4>Use Sonnet for most tasks</h4>
+        <p>Type <code>/model</code> in Claude Code and select Sonnet. Reserve Opus for complex synthesis. This saves significant API costs.</p>
+      </div>
+      <div class="tip">
+        <h4>Resume with "continue"</h4>
+        <p>If a session is interrupted, just say "continue". Claude reads <code>PROGRESS.md</code> and picks up where it left off.</p>
+      </div>
+      <div class="tip">
+        <h4>Import your BibTeX</h4>
+        <p>The <code>.bib</code> files work with Zotero, Mendeley, BibDesk, and LaTeX/pandoc. Open in a text editor for rich metadata.</p>
+      </div>
+      <div class="tip">
+        <h4>Each skill is standalone</h4>
+        <p>You don't need the full pipeline. Run <code>/claudistotle:literature-review</code> alone, or jump to <code>/claudistotle:draft</code> if you have your research.</p>
+      </div>
+      <div class="tip">
+        <h4>Paywalled content</h4>
+        <p>Claudistotle searches open databases. For paywalled articles, download PDFs manually to <code>sources/secondary/</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>
+    Claudistotle is built upon <a href="https://github.com/AI-4-Phi/PhilLit">PhilLit</a> by Johannes Himmelreich &amp; Marco Meyer.
+    <br />
+    Licensed under Apache 2.0. <a href="https://github.com/Rlin1027/claudistotle">GitHub</a>
+  </p>
+</footer>
+
+</body>
+</html>

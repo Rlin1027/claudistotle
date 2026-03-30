@@ -1,0 +1,42 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment (venv lives in CLAUDE_PLUGIN_DATA, not in repo)
+.venv/
+venv/
+env/
+
+# Environment secrets
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Claude Code local settings
+CLAUDE.local.md
+
+# OS generated
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Review outputs (user-generated, not part of plugin)
+reviews/*/
+!reviews/.gitkeep

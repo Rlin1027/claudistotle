@@ -1,0 +1,27 @@
+{
+  "name": "claudistotle",
+  "owner": {
+    "name": "RLin",
+    "email": "aired.lin1027@gmail.com"
+  },
+  "metadata": {
+    "description": "Philosophy research assistant plugin for Claude Code — literature review, academic writing, and peer review simulation.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "claudistotle",
+      "source": "./",
+      "description": "Philosophy research assistant — automated literature review with verified citations, primary text analysis, academic writing, and peer review simulation.",
+      "version": "1.0.0",
+      "author": {
+        "name": "RLin"
+      },
+      "homepage": "https://github.com/Rlin1027/claudistotle",
+      "repository": "https://github.com/Rlin1027/claudistotle",
+      "license": "Apache-2.0",
+      "keywords": ["philosophy", "research", "literature-review", "academic-writing", "citation"],
+      "category": "research"
+    }
+  ]
+}
