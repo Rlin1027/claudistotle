@@ -8,19 +8,19 @@
   <link rel="canonical" href="https://rlin1027.github.io/claudistotle/" />
   <style>
     :root {
-      --primary: #4a5568;
-      --accent: #5b6abf;
-      --accent-light: #7c8ae6;
-      --bg: #fafafa;
-      --card-bg: #ffffff;
-      --text: #2d3748;
-      --text-muted: #718096;
-      --border: #e2e8f0;
-      --code-bg: #1a202c;
-      --code-text: #e2e8f0;
-      --success: #48bb78;
-      --warning: #ecc94b;
-      --gate: #ed8936;
+      --primary: #5c3d2e;
+      --accent: #a0522d;
+      --accent-light: #c47a3a;
+      --bg: #f5f0e8;
+      --card-bg: #faf6ef;
+      --text: #3e2723;
+      --text-muted: #7b6b5d;
+      --border: #d9cdb8;
+      --code-bg: #2c1e14;
+      --code-text: #e8dcc8;
+      --success: #6d8b4e;
+      --warning: #c49a3c;
+      --gate: #b87333;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -30,7 +30,7 @@
     }
 
     /* Navigation */
-    nav { position: fixed; top: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); z-index: 100; padding: 0 2rem; }
+    nav { position: fixed; top: 0; width: 100%; background: rgba(245,240,232,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); z-index: 100; padding: 0 2rem; }
     nav .inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; }
     nav .logo { font-weight: 700; font-size: 1.15rem; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
     nav .logo img { height: 32px; border-radius: 6px; }
@@ -46,11 +46,11 @@
       border: none; background: var(--card-bg); color: var(--text-muted); padding: 0.3rem 0.65rem; cursor: pointer;
       font-size: 0.8rem; font-weight: 600; transition: all 0.15s;
     }
-    .lang-toggle button.active { background: var(--accent); color: #fff; }
-    .lang-toggle button:hover:not(.active) { background: #edf2f7; }
+    .lang-toggle button.active { background: var(--accent); color: #faf6ef; }
+    .lang-toggle button:hover:not(.active) { background: #ebe4d6; }
 
     /* Hero */
-    .hero { padding: 140px 2rem 80px; text-align: center; background: linear-gradient(135deg, #f7f8fc 0%, #eef1f8 100%); }
+    .hero { padding: 140px 2rem 80px; text-align: center; background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d3 50%, #e0d5c0 100%); }
     .hero h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1rem; color: var(--text); }
     .hero h1 span { color: var(--accent); }
     .hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 640px; margin: 0 auto 2rem; }
@@ -59,7 +59,7 @@
     .cta-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
     .cta { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.8rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: all 0.2s; }
     .cta-primary { background: var(--accent); color: #fff; }
-    .cta-primary:hover { background: var(--accent-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(91,106,191,0.3); }
+    .cta-primary:hover { background: var(--accent-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(160,82,45,0.3); }
     .cta-secondary { background: var(--card-bg); color: var(--text); border: 1px solid var(--border); }
     .cta-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
@@ -84,15 +84,15 @@
     .pipeline-section .section-label { color: var(--accent-light); }
     .pipeline-section .section-subtitle { color: #a0aec0; }
     .pipeline { display: flex; flex-direction: column; gap: 0; position: relative; }
-    .pipeline::before { content: ''; position: absolute; left: 27px; top: 32px; bottom: 32px; width: 2px; background: #4a5568; }
+    .pipeline::before { content: ''; position: absolute; left: 27px; top: 32px; bottom: 32px; width: 2px; background: #5c4a3a; }
     .stage { display: flex; align-items: flex-start; gap: 1.25rem; padding: 1rem 0; position: relative; }
     .stage-num { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; z-index: 1; }
-    .stage-skill { background: #2d3a5c; color: var(--accent-light); border: 2px solid #4a5a8a; }
-    .stage-gate { background: #5c3a1f; color: var(--gate); border: 2px solid #8a6a3a; }
+    .stage-skill { background: #3e2a1a; color: var(--accent-light); border: 2px solid #6b4c32; }
+    .stage-gate { background: #4a2f1a; color: var(--gate); border: 2px solid #8a6a3a; }
     .stage-content h3 { font-size: 1rem; margin-bottom: 0.25rem; }
-    .stage-content h3 code { background: #2d3748; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.85rem; color: var(--accent-light); }
-    .stage-content p { font-size: 0.88rem; color: #a0aec0; }
-    .gate-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(237,137,54,0.15); color: var(--gate); margin-left: 0.5rem; }
+    .stage-content h3 code { background: #3a2515; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.85rem; color: var(--accent-light); }
+    .stage-content p { font-size: 0.88rem; color: #b8a898; }
+    .gate-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(184,115,51,0.2); color: var(--gate); margin-left: 0.5rem; }
 
     /* Setup Steps */
     .setup-steps { counter-reset: setup; }
@@ -104,18 +104,18 @@
     /* Code blocks */
     pre { background: var(--code-bg); color: var(--code-text); padding: 1rem 1.25rem; border-radius: 8px; font-size: 0.85rem; overflow-x: auto; line-height: 1.6; }
     code { font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace; }
-    p code, li code, td code { background: #edf2f7; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; color: var(--accent); }
+    p code, li code, td code { background: #ebe4d6; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; color: var(--accent); }
 
     /* Commands Table */
     .commands-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
     .commands-table th { text-align: left; padding: 0.75rem 1rem; border-bottom: 2px solid var(--border); font-weight: 600; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
     .commands-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
     .commands-table td:first-child code { white-space: nowrap; }
-    .commands-table tr:hover { background: #f7fafc; }
+    .commands-table tr:hover { background: #efe8da; }
 
     /* Output tree */
     .tree { background: var(--code-bg); color: var(--code-text); padding: 1.5rem 2rem; border-radius: 12px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85rem; line-height: 1.8; overflow-x: auto; }
-    .tree .dir { color: #90cdf4; } .tree .file { color: #a0aec0; } .tree .comment { color: #718096; font-style: italic; }
+    .tree .dir { color: #c47a3a; } .tree .file { color: #b8a898; } .tree .comment { color: #8a7968; font-style: italic; }
 
     /* Tips */
     .tip-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
@@ -187,32 +187,32 @@
 
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon" style="background:#eef2ff">&#x1F50D;</div>
+        <div class="feature-icon" style="background:#ebe4d6">&#x1F50D;</div>
         <h3 data-i18n="feat.lit.title">Literature Review</h3>
         <p data-i18n="feat.lit.desc">Searches Semantic Scholar, OpenAlex, CORE, arXiv, PhilPapers, SEP, IEP, and NDPR. Every citation verified via CrossRef. Open-access PDFs auto-downloaded.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:#fef3e2">&#x270D;&#xFE0F;</div>
+        <div class="feature-icon" style="background:#f0e0c8">&#x270D;&#xFE0F;</div>
         <h3 data-i18n="feat.write.title">Academic Writing</h3>
         <p data-i18n="feat.write.desc">Builds a structured argument skeleton (claim / evidence / counterargument / rebuttal), then expands into full prose with Chicago author-date citations.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:#e6f7ee">&#x1F9D1;&#x200D;&#x1F3EB;</div>
+        <div class="feature-icon" style="background:#e5ddd0">&#x1F9D1;&#x200D;&#x1F3EB;</div>
         <h3 data-i18n="feat.peer.title">Peer Review Simulation</h3>
         <p data-i18n="feat.peer.desc">Three rounds with two AI personas &mdash; Athena (reviewer) and Calliope (reviser). Covers argument validity, evidence quality, and writing polish.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:#fde8e8">&#x1F4D6;</div>
+        <div class="feature-icon" style="background:#f0dbc8">&#x1F4D6;</div>
         <h3 data-i18n="feat.text.title">Text Commentary</h3>
         <p data-i18n="feat.text.desc">Close reading and logical annotation of primary philosophical texts. Identifies logical connectors, argument structure, and integration points.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:#e8f0fe">&#x1F916;</div>
+        <div class="feature-icon" style="background:#e8ddd0">&#x1F916;</div>
         <h3 data-i18n="feat.auto.title">Autopilot Mode</h3>
         <p data-i18n="feat.auto.desc">Run the entire pipeline with configurable autonomy (cautious / moderate / full). Self-heals when quality gates fail &mdash; retries automatically before asking for help.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:#f3e8ff">&#x2705;</div>
+        <div class="feature-icon" style="background:#e5dbc8">&#x2705;</div>
         <h3 data-i18n="feat.gate.title">Quality Gates</h3>
         <p data-i18n="feat.gate.desc">Three validation checkpoints between phases ensure coverage, citation integrity, and revision completeness. No shortcuts to the finish line.</p>
       </div>
@@ -236,7 +236,7 @@
       <div class="stage"><div class="stage-num stage-gate">&#x2714;</div><div class="stage-content"><h3><code>/claudistotle:validate</code> <span class="gate-tag">Mode B</span></h3><p data-i18n="pipe.b">Quality gate: Citation integrity check. Every reference verified against CrossRef and Semantic Scholar.</p></div></div>
       <div class="stage"><div class="stage-num stage-skill">5</div><div class="stage-content"><h3><code>/claudistotle:peer-review</code></h3><p data-i18n="pipe.5">Three rounds: argument validity &rarr; evidence quality &rarr; writing polish. Two AI personas iterate on your draft.</p></div></div>
       <div class="stage"><div class="stage-num stage-gate">&#x2714;</div><div class="stage-content"><h3><code>/claudistotle:validate</code> <span class="gate-tag">Mode C</span></h3><p data-i18n="pipe.c">Quality gate: Change record completeness. Ensures all reviewer feedback has been addressed.</p></div></div>
-      <div class="stage"><div class="stage-num" style="background:#2d5c3a;color:#48bb78;border:2px solid #3a8a5a">&#x2713;</div><div class="stage-content"><h3 style="color:#48bb78" data-i18n="pipe.done">Done</h3><p data-i18n="pipe.done.desc">Your reviewed, citation-verified paper is ready.</p></div></div>
+      <div class="stage"><div class="stage-num" style="background:#3a4a2a;color:#6d8b4e;border:2px solid #5a7a3a">&#x2713;</div><div class="stage-content"><h3 style="color:#6d8b4e" data-i18n="pipe.done">Done</h3><p data-i18n="pipe.done.desc">Your reviewed, citation-verified paper is ready.</p></div></div>
     </div>
   </div>
 </section>
@@ -296,7 +296,7 @@ and its implications for cognitive offloading.
 </section>
 
 <!-- ============ COMMANDS ============ -->
-<section id="commands" style="background:#f7f8fc">
+<section id="commands" style="background:#efe8da">
   <div class="container">
     <div class="section-label" data-i18n="cmd.label">Reference</div>
     <h2 data-i18n="cmd.title">All Commands</h2>
@@ -355,7 +355,7 @@ and its implications for cognitive offloading.
 </section>
 
 <!-- ============ TIPS ============ -->
-<section id="tips" style="background:#f7f8fc">
+<section id="tips" style="background:#efe8da">
   <div class="container">
     <div class="section-label" data-i18n="tips.label">Pro Tips</div>
     <h2 data-i18n="tips.title">Get the Most Out of Claudistotle</h2>
