@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/Claudistotle.png" alt="Claudistotle" width="200">
+  <img src="assets/Claudistotle.png" alt="Claudistotle" width="ˊ600">
 </p>
 
 # Claudistotle — Philosophy Research Plugin for Claude Code
