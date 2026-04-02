@@ -17,7 +17,7 @@ import argparse
 import os
 import re
 import sys
-import xml.etree.ElementTree as ET
+from defusedxml.ElementTree import fromstring as defused_fromstring
 from typing import Optional
 
 import requests
@@ -144,7 +144,7 @@ def fetch_sitemap(limiter, backoff: ExponentialBackoff) -> list[str]:
                 raise RuntimeError(f"HTTP {response.status_code} fetching sitemap")
 
             # Parse XML sitemap
-            root = ET.fromstring(response.text)
+            root = defused_fromstring(response.text)
             # Handle XML namespace
             ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
             urls = []

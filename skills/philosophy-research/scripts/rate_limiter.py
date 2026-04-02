@@ -28,7 +28,9 @@ For retry logic with exponential backoff:
         break
 """
 
+import os
 import random
+import sys
 import tempfile
 import time
 from pathlib import Path
@@ -42,6 +44,25 @@ except ImportError:
     HAS_FCNTL = False
 
 
+def _get_claudistotle_lock_dir() -> Path:
+    """返回安全的用戶私有鎖目錄，失敗時回退至 /tmp。"""
+    if sys.platform == "win32":
+        base = Path(os.environ.get("APPDATA", str(Path.home())))
+    else:
+        base = Path.home()
+    lock_dir = base / ".claudistotle" / "locks"
+    try:
+        lock_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+        return lock_dir
+    except OSError:
+        fallback = Path(tempfile.gettempdir()) / "philosophy_research_ratelimits"
+        fallback.mkdir(parents=True, exist_ok=True)
+        return fallback
+
+
+LOCK_DIR = _get_claudistotle_lock_dir()
+
+
 class RateLimiter:
     """
     File-based rate limiter that coordinates across concurrent processes.
@@ -51,9 +72,6 @@ class RateLimiter:
     reserves a time slot by writing the projected request time, so subsequent
     callers queue behind it.
     """
-
-    # Lock file directory - use system temp dir for cross-platform compatibility
-    LOCK_DIR = Path(tempfile.gettempdir()) / "philosophy_research_ratelimits"
 
     def __init__(self, api_name: str, min_interval: float):
         """
@@ -65,8 +83,8 @@ class RateLimiter:
         """
         self.api_name = api_name
         self.min_interval = min_interval
-        self.LOCK_DIR.mkdir(exist_ok=True)
-        self.lock_file = self.LOCK_DIR / f".ratelimit_{api_name}.lock"
+        LOCK_DIR.mkdir(exist_ok=True)
+        self.lock_file = LOCK_DIR / f".ratelimit_{api_name}.lock"
         self._last_wait_time: Optional[float] = None
 
     def _read_timestamp(self, f) -> float:
@@ -301,12 +319,11 @@ def list_active_limiters() -> list[str]:
     Returns:
         List of API names with active lock files
     """
-    lock_dir = Path(tempfile.gettempdir()) / "philosophy_research_ratelimits"
-    if not lock_dir.exists():
+    if not LOCK_DIR.exists():
         return []
 
     active = []
-    for lock_file in lock_dir.glob(".ratelimit_*.lock"):
+    for lock_file in LOCK_DIR.glob(".ratelimit_*.lock"):
         api_name = lock_file.stem.replace(".ratelimit_", "")
         active.append(api_name)
     return sorted(active)
@@ -336,12 +353,11 @@ def clear_all_limiters() -> int:
     Returns:
         Number of lock files removed
     """
-    lock_dir = Path(tempfile.gettempdir()) / "philosophy_research_ratelimits"
-    if not lock_dir.exists():
+    if not LOCK_DIR.exists():
         return 0
 
     count = 0
-    for lock_file in lock_dir.glob(".ratelimit_*.lock"):
+    for lock_file in LOCK_DIR.glob(".ratelimit_*.lock"):
         lock_file.unlink()
         count += 1
     return count
