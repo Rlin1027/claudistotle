@@ -20,15 +20,38 @@ Usage:
 import hashlib
 import json
 import os
-import pickle
+import sys
 import tempfile
 import time
+import warnings
 from pathlib import Path
 from typing import Any, Optional
 
-# Cache configuration - use system temp dir for cross-platform compatibility
-CACHE_DIR = Path(tempfile.gettempdir()) / "philosophy_research_cache"
 DEFAULT_TTL = 7 * 24 * 60 * 60  # 7 days in seconds
+
+
+def _get_claudistotle_cache_dir() -> Path:
+    """返回安全的用戶私有快取目錄，失敗時回退至 /tmp。"""
+    if sys.platform == "win32":
+        base = Path(os.environ.get("APPDATA", str(Path.home())))
+    else:
+        base = Path.home()
+    cache_dir = base / ".claudistotle" / "cache"
+    try:
+        cache_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+        return cache_dir
+    except OSError:
+        warnings.warn(
+            f"無法建立 {cache_dir}，回退至 /tmp/philosophy_research_cache",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        fallback = Path(tempfile.gettempdir()) / "philosophy_research_cache"
+        fallback.mkdir(parents=True, exist_ok=True)
+        return fallback
+
+
+CACHE_DIR = _get_claudistotle_cache_dir()
 
 
 def cache_key(source: str, **params) -> str:
@@ -75,9 +98,17 @@ def get_cache(key: str, ttl: int = DEFAULT_TTL) -> Optional[Any]:
     unsupported — put_cache(key, None) will appear to succeed but get_cache
     will always look like a miss for that key.
     """
-    cache_file = CACHE_DIR / f"{key}.pkl"
+    cache_file = CACHE_DIR / f"{key}.json"
 
     if not cache_file.exists():
+        # graceful coexistence：忽略舊 pickle 格式快取
+        pkl_path = cache_file.with_suffix(".pkl")
+        if pkl_path.exists():
+            warnings.warn(
+                f"發現舊格式快取 {pkl_path.name}，已忽略（等待 TTL 自然過期）",
+                RuntimeWarning,
+                stacklevel=2,
+            )
         return None
 
     try:
@@ -91,10 +122,10 @@ def get_cache(key: str, ttl: int = DEFAULT_TTL) -> Optional[Any]:
             return None
 
         # Load and return cached result
-        with open(cache_file, "rb") as f:
-            return pickle.load(f)
+        with open(cache_file, "r", encoding="utf-8") as f:
+            return json.load(f)
 
-    except (OSError, pickle.PickleError):
+    except (OSError, json.JSONDecodeError):
         # Corrupted or inaccessible cache, remove it
         try:
             cache_file.unlink()
@@ -121,19 +152,19 @@ def put_cache(key: str, result: Any) -> bool:
         # Ensure cache directory exists
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
-        cache_file = CACHE_DIR / f"{key}.pkl"
+        cache_file = CACHE_DIR / f"{key}.json"
 
         # Write to temp file first, then rename for atomicity
         temp_file = cache_file.with_suffix(".tmp")
-        with open(temp_file, "wb") as f:
-            pickle.dump(result, f, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(temp_file, "w", encoding="utf-8") as f:
+            json.dump(result, f, ensure_ascii=False)
 
         # Atomic rename
         temp_file.replace(cache_file)
 
         return True
 
-    except (OSError, pickle.PickleError):
+    except (OSError, TypeError, ValueError):
         return False
 
 
@@ -152,7 +183,7 @@ def clear_cache(source: Optional[str] = None) -> int:
         return 0
 
     count = 0
-    pattern = f"{source}_*.pkl" if source else "*.pkl"
+    pattern = f"{source}_*.json" if source else "*.json"
 
     for cache_file in CACHE_DIR.glob(pattern):
         try:
@@ -178,7 +209,7 @@ def cache_stats() -> dict:
             "total_size_bytes": 0,
         }
 
-    entries = list(CACHE_DIR.glob("*.pkl"))
+    entries = list(CACHE_DIR.glob("*.json"))
 
     if not entries:
         return {

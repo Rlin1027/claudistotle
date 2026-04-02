@@ -219,7 +219,7 @@ def main():
     parser.add_argument(
         "--api-key",
         default=os.environ.get("S2_API_KEY", ""),
-        help="Semantic Scholar API key (default: S2_API_KEY env var)"
+        help="Semantic Scholar API key (default: S2_API_KEY env var) [DEPRECATED: 請使用環境變數。命令列傳入 API 金鑰會留在 shell history 中，詳見 GETTING_STARTED.md]"
     )
     parser.add_argument(
         "--debug",
@@ -228,6 +228,16 @@ def main():
     )
 
     args = parser.parse_args()
+
+    # --api-key 棄用警告
+    _api_key_attr = getattr(args, "api_key", None) or getattr(args, "key", None)
+    if _api_key_attr:
+        import sys as _sys
+        print(
+            "[WARNING] --api-key 已棄用：命令列 API 金鑰會被記錄在 shell history 中。"
+            " 請改用對應的環境變數（如 S2_API_KEY、BRAVE_API_KEY 等）。",
+            file=_sys.stderr,
+        )
 
     # Get paper IDs from args
     paper_ids = []

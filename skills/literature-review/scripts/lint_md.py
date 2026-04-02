@@ -3,6 +3,7 @@
 Minimal markdown linter for Claude Code.
 Checks markdown files against specific pymarkdownlnt rules.
 """
+import os
 import re
 import subprocess
 import sys
@@ -66,6 +67,14 @@ DISABLED_RULES = [
 
 def lint_markdown(filepath: str) -> int:
     """Lint a markdown file and output errors with explanations."""
+    # 路徑遍歷防護：確認 filepath 在允許的工作目錄內
+    _filepath_real = os.path.realpath(filepath)
+    _allowed_real = os.path.realpath(os.getcwd())
+    if not (_filepath_real == _allowed_real or _filepath_real.startswith(_allowed_real + os.sep)):
+        print(f"[ERROR] 路徑遍歷偵測：{filepath}", file=sys.stderr)
+        sys.exit(1)
+    filepath = _filepath_real
+
     disabled_str = ",".join(DISABLED_RULES)
     extensions_str = ",".join(ENABLED_EXTENSIONS)
 
