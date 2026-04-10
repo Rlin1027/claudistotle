@@ -13,7 +13,9 @@
       "WebFetch",
       "Bash",
       "Write(reviews/**)",
-      "Edit(reviews/**)"
+      "Edit(reviews/**)",
+      "Write(knowledge-base/**)",
+      "Edit(knowledge-base/**)"
     ],
     "ask": [
       "Bash(rm *)",

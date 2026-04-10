@@ -29,6 +29,7 @@ Topic idea  →  Research design  →  Literature review  →  Draft  →  Peer 
 - **Academic writing**: Builds an argument skeleton (claim/evidence/counterargument/rebuttal) with a logic pre-review, then expands into full prose with Chicago author-date citations.
 - **Peer review simulation**: Three rounds — argument validity, evidence quality (with automated citation integrity checks), and writing quality. Two AI personas (Athena the reviewer, Calliope the reviser) iterate on your draft.
 - **Text commentary**: Close reading and logical annotation of primary philosophical texts, automatically integrated into your draft.
+- **Knowledge base**: Karpathy-style three-layer knowledge base (`raw/` → `wiki/` → `schema`) that accumulates research knowledge across projects. Ingest literature reviews to build structured wiki pages for philosophers, concepts, and debates. Query prior research before starting new projects to avoid redundant work.
 - **Autopilot**: Runs the entire pipeline with configurable autonomy (full / moderate / cautious), self-healing on quality gate failures.
 
 ## Prerequisites
@@ -182,6 +183,7 @@ Side tracks available at any point:
 | `/claudistotle:validate` | Quality gates between pipeline phases |
 | `/claudistotle:feedback` | External feedback integration |
 | `/claudistotle:autopilot` | Automated pipeline execution |
+| `/claudistotle:knowledge` | Knowledge base management (ingest & query) |
 | `/claudistotle:philosophy-research` | Direct academic database search |
 
 ### Literature Review: How It Works
@@ -206,6 +208,23 @@ The `/claudistotle:literature-review` skill coordinates 6 phases with specialize
 | `full` | Runs nearly autonomously (0-1 pauses total) |
 
 Self-healing: if a quality gate fails (e.g., literature coverage gap), autopilot automatically retries — runs a supplementary search, then re-validates (max 2 retries before asking for help).
+
+### Knowledge Base
+
+`/claudistotle:knowledge` manages a cross-project knowledge base inspired by [Andrej Karpathy's approach](https://x.com/karpathy/status/1899175044498395500) to LLM-maintained wikis. It uses a three-layer architecture:
+
+- **Raw layer** (`knowledge-base/raw/`): Immutable project snapshots (BibTeX + literature review)
+- **Wiki layer** (`knowledge-base/wiki/`): LLM-maintained Markdown pages for philosophers, concepts, and debates — with Obsidian-compatible wikilinks
+- **Schema layer** (`knowledge-base/CLAUDE.md`): Page templates, naming conventions, and ingest rules
+
+Two operations:
+
+| Command | What it does |
+|---------|-------------|
+| `/claudistotle:knowledge ingest [project]` | Extracts entities from a completed literature review and creates/updates wiki pages (two-pass: deterministic BibTeX parsing + LLM enrichment) |
+| `/claudistotle:knowledge query [topic]` | Searches the knowledge base and returns a Prior Knowledge Brief that can feed into future literature reviews |
+
+The knowledge base grows with each project. When starting a new literature review, Phase 1.5 automatically queries existing knowledge to avoid redundant searches.
 
 ## Output Files
 

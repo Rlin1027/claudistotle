@@ -148,6 +148,45 @@ This phase validates conditions for subsequent phases to function.
 
 ---
 
+## Phase 1.5: Knowledge Base Query (Optional)
+
+This phase checks the knowledge base for prior research relevant to the current topic. If no knowledge base exists, this phase is silently skipped.
+
+1. Check if `knowledge-base/index.md` exists
+   - If NO: skip this phase entirely (backward compatible, no warning needed)
+   - If YES: proceed
+
+2. Read `knowledge-base/index.md` to identify philosophers, concepts, and debates related to the research topic
+
+3. Use Grep to search `knowledge-base/wiki/**/*.md` for terms from the research idea
+
+4. Read matching wiki pages (max 5 most relevant)
+
+5. Compile a **Prior Knowledge Brief**:
+   ```markdown
+   ## Prior Knowledge Brief: [research topic]
+   ### Known Philosophers
+   - [Name] — [core claim, 1 sentence]
+
+   ### Known Concepts
+   - [Concept] — [definition, 1 sentence]
+
+   ### Known Papers
+   - [BibTeX key] — [one-line summary]
+
+   ### Research Gaps
+   - [Areas mentioned in wiki but not deeply explored]
+   ```
+
+6. Pass the Prior Knowledge Brief as **additional context** to the `literature-review-planner` agent in Phase 2:
+   - Append to the agent prompt: "Prior knowledge from previous projects: [brief]. Use this to inform domain decomposition — prioritize domains that extend or challenge existing knowledge. Known papers should be referenced but not re-searched."
+
+7. Collect BibTeX keys from the brief as a "known papers" list. Pass to `domain-literature-researcher` agents in Phase 3 as: "Already known papers (do not re-search): [keys]"
+
+**CRITICAL**: This phase must NOT block the workflow. If any step fails (file read error, no matches), log the error and proceed to Phase 2 as normal.
+
+---
+
 ## Phase 2: Structure Literature Review Domains
 
 1. Receive and review research idea from user. If you require further information, clarification or direction, ask the user. 
@@ -467,14 +506,14 @@ reviews/[project-name]/
    If any papers could not be downloaded automatically, output a clear list:
 
    ```
-   📥 Auto-downloaded [N] full texts to sources/secondary/
+   📥 已自動下載 [N] 篇全文至 sources/secondary/
 
-   ⚠️ The following [M] papers could not be auto-downloaded (paywall or no open-access version). Please download manually:
+   ⚠️ 以下 [M] 篇無法自動下載（需付費或無開放取用版本），請手動補齊：
    1. [Author (Year)] "[Title]" — DOI: [doi]
    2. ...
 
-   After manual download, place the PDF in reviews/[project-name]/sources/secondary/.
-   The system will auto-convert to Markdown on the next run.
+   手動下載後請將 PDF 放入 reviews/[project-name]/sources/secondary/，
+   系統會在下次執行時自動轉換為 Markdown。
    ```
 
 8. **Generate project index** for efficient context usage in downstream skills:
@@ -509,6 +548,42 @@ reviews/[project-name]/
    ```
 
    **Important:** Use paths relative to repo root (not bare filenames). Do NOT use `&&/||` chaining for this check, as Pandoc errors would trigger the wrong fallback message.
+
+11. **Knowledge Base Ingest** (optional):
+
+   If `knowledge-base/CLAUDE.md` exists (knowledge base has been initialized):
+
+   a. Check `knowledge-base/log.md` for prior ingest of this project name. If already ingested, skip.
+   b. Copy raw data to knowledge base:
+      ```bash
+      mkdir -p knowledge-base/raw/[project-name]
+      cp reviews/[project-name]/literature-all.bib knowledge-base/raw/[project-name]/
+      cp reviews/[project-name]/literature-review-final.md knowledge-base/raw/[project-name]/
+      ```
+   c. Run entity extraction (Pass 1) against the raw copy:
+      ```bash
+      $PYTHON $CLAUDE_PLUGIN_ROOT/skills/knowledge/scripts/extract_entities.py \
+        "knowledge-base/raw/[project-name]/literature-all.bib"
+      ```
+   d. Invoke `knowledge-ingest` agent via Task tool (Pass 2) with:
+      - Entity stubs JSON from step c
+      - Project name
+      - BibTeX path: `knowledge-base/raw/[project-name]/literature-all.bib`
+      - Literature review path: `knowledge-base/raw/[project-name]/literature-review-final.md`
+      - Knowledge base path: `knowledge-base/`
+   d. Add ingest results to the completion banner:
+      ```
+      📚 知識庫：[N] 位哲學家、[M] 個概念已存入 knowledge-base/
+      ```
+
+   If `knowledge-base/CLAUDE.md` does NOT exist, add a tip to the completion banner:
+   ```
+   💡 提示：使用 /claudistotle:knowledge ingest [project-name] 將研究成果存入知識庫，
+      讓未來的研究可以復用已有知識。首次使用請先初始化知識庫。
+   ```
+
+   **CRITICAL**: This step is non-blocking. If ingest fails, the literature review is still complete.
+   Report any ingest errors but do NOT fail the overall workflow.
 
 ---
 
@@ -566,32 +641,32 @@ When `/literature-review` completes successfully (Phase 6 assembly done), output
 
 ```
 ═══════════════════════════════════════════════════
-✅ Stage Complete: Literature Review (Phases 1-6)
+✅ 階段完成：文獻回顧（Phases 1-6）
 
-📄 Outputs:
-   • literature-review-final.md ([wordcount] words)
-   • literature-all.bib ([N] sources)
-   • INDEX.md (Research data index)
-   • sources/secondary/ ([M] full-text downloads)
+📄 產出：
+   • literature-review-final.md（[wordcount] 字）
+   • literature-all.bib（[N] 筆文獻）
+   • INDEX.md（研究資料索引）
+   • sources/secondary/（[M] 篇全文下載）
 
-📍 Current Position: Phases 1-6 — /literature-review ✅
+📍 當前位置：Phases 1-6 — /literature-review ✅
 
-➡️ Next Step: /claudistotle:validate (Mode A — Literature Coverage Check)
-   Verify literature comprehensively covers all dimensions of research question.
+➡️ 下一步：/claudistotle:validate（Mode A — 文獻覆蓋率檢查）
+   檢查文獻是否完整涵蓋研究問題的各個面向。
 
-📥 [If any sources not downloaded] [K] sources need manual download; see list above.
+📥 [如有未下載文獻] 有 [K] 篇文獻需手動下載，詳見上方清單。
 
-💡 Tip: For close reading analysis of primary texts, use /claudistotle:text-commentary
+💡 提示：如需對一手文獻做細讀分析，可使用 /claudistotle:text-commentary
 ═══════════════════════════════════════════════════
 ```
 
 ### Update PROGRESS.md
 
 Update `reviews/[project-name]/PROGRESS.md`:
-- **Current Status** → Stage: `/literature-review` Complete | Next: Run `/validate` Mode A
-- **Completed Milestones** → Append: `- [x] Literature Review — [date] — [N] sources, [wordcount]-word synthesis`
-- **Recently Modified Files** → Update file records
-- **Progress History** → Append status change
+- **當前狀態** → 階段: `/literature-review` 完成 | 下一步: 執行 `/validate` Mode A
+- **已完成里程碑** → 追加: `- [x] 文獻回顧 — [date] — [N] 篇文獻、[wordcount] 字綜述`
+- **最近修改的檔案** → 更新相關檔案記錄
+- **進度歷史** → 追加狀態變更
 
 ---
 
