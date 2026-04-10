@@ -211,7 +211,7 @@ Self-healing: if a quality gate fails (e.g., literature coverage gap), autopilot
 
 ### Knowledge Base
 
-`/claudistotle:knowledge` manages a cross-project knowledge base inspired by [Andrej Karpathy's approach](https://x.com/karpathy/status/1899175044498395500) to LLM-maintained wikis. It uses a three-layer architecture:
+`/claudistotle:knowledge` manages a cross-project knowledge base inspired by [Andrej Karpathy's approach](https://x.com/karpathy/status/2039805659525644595) to LLM-maintained wikis. It uses a three-layer architecture:
 
 - **Raw layer** (`knowledge-base/raw/`): Immutable project snapshots (BibTeX + literature review)
 - **Wiki layer** (`knowledge-base/wiki/`): LLM-maintained Markdown pages for philosophers, concepts, and debates — with Obsidian-compatible wikilinks
